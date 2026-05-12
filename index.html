@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Relevamiento Gastronómico - Interior · Banco Familiar</title>
+<title>Relevamiento Gastronómico · Banco Familiar</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -170,7 +170,7 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
 <div class="header">
   <img class="logo" src="logo_banco_familiar.png" alt="Banco Familiar">
   <div>
-    <h1>Relevamiento Gastronómico - Interior</h1>
+    <h1>Relevamiento Gastronómico</h1>
     <p>Banco Familiar · Control de materiales</p>
   </div>
 </div>
@@ -236,6 +236,12 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
           <span class="tag verde" id="info-beneficio"></span>
           <span class="tag amber" id="info-dia"></span>
         </div>
+      </div>
+      <div class="field cond" id="sec-alias" style="margin-top:12px">
+        <label>¿Con qué nombre se identifica el local? <span style="font-size:.76rem;color:var(--gris-3);font-weight:400">(opcional — si el nombre en la lista no coincide)</span></label>
+        <input type="text" id="inp-alias" class="search-input"
+          placeholder="Ej: Pizzería Don Juan, El Rancho..."
+          oninput="guardarBorrador()" autocomplete="off">
       </div>
     </div>
     <div class="card">
@@ -583,6 +589,7 @@ function verificarObsOtro(key){
   const t=S.chk[key]&&S.chk[key].some(v=>v.toLowerCase().includes('otro')||v.toLowerCase().includes('otra'));
   ow.classList.toggle('on',t);
   if(!t){const ta=document.getElementById('obs-'+key);if(ta)ta.value='';}
+  actualizarNav();
 }
 
 function toggleNoFotoComp(){
@@ -607,7 +614,7 @@ function initBuscador(){
       const d=document.createElement('div');d.className='dropdown-item';
       const n=local.nombre;const idx=n.toLowerCase().indexOf(q);
       d.innerHTML='<div>'+n.slice(0,idx)+'<strong>'+n.slice(idx,idx+q.length)+'</strong>'+n.slice(idx+q.length)+'</div>'
-        +'<small>'+local.zona+'</small>';
+        +'<small>📍 '+(local.direccion||local.zona||'')+(local.direccion&&local.zona?' · '+local.zona:'')+'</small>';
       d.addEventListener('click',()=>elegirLocal(local));drop.appendChild(d);
     });}
     drop.classList.add('open');
@@ -619,6 +626,8 @@ function initBuscador(){
     S.localSel=null;S.localData=null;
     badge.classList.remove('show');
     document.getElementById('local-info').classList.remove('show');
+    document.getElementById('sec-alias').classList.remove('on');
+    document.getElementById('inp-alias').value='';
     inp.value='';guardarBorrador();actualizarNav();
   });
 }
@@ -638,6 +647,7 @@ function elegirLocal(local){
     const el=document.getElementById(id);el.style.display=el.textContent.trim()?'':'none';
   });
   document.getElementById('local-info').classList.add('show');
+  document.getElementById('sec-alias').classList.add('on');
   guardarBorrador();actualizarNav();
 }
 
@@ -658,22 +668,13 @@ function procArchivos(files,tipo){
 function procFoto(file,tipo){
   const reader=new FileReader();
   reader.onload=e=>{
-    const img=new Image();
-    img.onload=()=>{
-      const MAX=1280;let w=img.width,h=img.height;
-      if(w>MAX||h>MAX){if(w>=h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
-      const cv=document.createElement('canvas');cv.width=w;cv.height=h;
-      cv.getContext('2d').drawImage(img,0,0,w,h);
-      const dataUrl=cv.toDataURL('image/jpeg',0.82);
-      const loc=(S.localSel||'LOCAL').replace(/[^A-Z0-9]/gi,'_').toUpperCase().slice(0,20);
-      const rel=(document.getElementById('sel-relevador').value||'REL').replace(/\s+/g,'_').toUpperCase();
-      const d=new Date();
-      const fch=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
-      const nom=tipo.toUpperCase()+'_'+loc+'_'+rel+'_'+fch+'_'+String(S.fotos[tipo].length+1).padStart(2,'0')+'.jpg';
-      S.fotos[tipo].push({dataUrl,nombre:nom});
-      renderFotos(tipo);guardarBorrador();actualizarNav();
-    };
-    img.src=e.target.result;
+    const loc=(S.localSel||'LOCAL').replace(/[^A-Z0-9]/gi,'_').toUpperCase().slice(0,20);
+    const rel=(document.getElementById('sel-relevador').value||'REL').replace(/\s+/g,'_').toUpperCase();
+    const d=new Date();
+    const fch=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+    const nom=tipo.toUpperCase()+'_'+loc+'_'+rel+'_'+fch+'_'+String(S.fotos[tipo].length+1).padStart(2,'0')+'.jpg';
+    S.fotos[tipo].push({dataUrl:e.target.result,nombre:nom});
+    renderFotos(tipo);guardarBorrador();actualizarNav();
   };
   reader.readAsDataURL(file);
 }
@@ -716,6 +717,8 @@ function camposFaltantes(n){
     if(mat!=='Ninguno'){
       if(!S.sino.otroMat)f.push('Otro material de Banco Familiar');
       else if(S.sino.otroMat==='si'&&S.chk.otroMat.length===0)f.push('Seleccionar cuál otro material');
+      else if(S.sino.otroMat==='si'&&S.chk.otroMat.some(v=>v.toLowerCase().includes('otro'))&&!document.getElementById('obs-otroMat').value.trim())
+        f.push('Especificar cuál otro material BF');
       if(!S.resp.estadoMaterial)f.push('Estado del material');
       if(!S.sino.muestraPromo)f.push('¿El material muestra la promoción?');
       else if(S.sino.muestraPromo==='no'&&S.chk.muestraPromo.length===0)f.push('Seleccionar motivo de promo incorrecta');
@@ -723,14 +726,20 @@ function camposFaltantes(n){
     }
     if(!S.sino.matAnterior)f.push('Material de campañas anteriores');
     else if(S.sino.matAnterior==='si'&&S.chk.matAnterior.length===0)f.push('Seleccionar cuál material anterior');
+    else if(S.sino.matAnterior==='si'&&S.fotos.ant.length<1)f.push('Al menos 1 foto del material de campaña anterior');
     if(S.fotos.bf.length<1)f.push('Al menos 1 foto del material Banco Familiar');
   }
   if(n===3){
     if(!S.sino.matComp)f.push('Material de competencia visible');
     else if(S.sino.matComp==='si'&&S.chk.matComp.length===0)f.push('Seleccionar qué competencia');
+    else if(S.sino.matComp==='si'&&S.chk.matComp.some(v=>v.toLowerCase().includes('otro'))&&!document.getElementById('obs-matComp').value.trim())
+      f.push('Especificar cuál otro banco o medio de pago');
     if(!S.sino.promoEntidad)f.push('Promo de otra entidad financiera');
     else if(S.sino.promoEntidad==='si'&&S.chk.promoEntidad.length===0)f.push('Seleccionar qué promo de otra entidad');
+    else if(S.sino.promoEntidad==='si'&&S.chk.promoEntidad.some(v=>v.toLowerCase().includes('otra'))&&!document.getElementById('obs-promoEntidad').value.trim())
+      f.push('Especificar cuál otra promoción');
     const hay=S.sino.matComp==='si'||S.sino.promoEntidad==='si';
+    if(hay&&!S.noFotoComp&&S.fotos.comp.length<1)f.push('Al menos 1 foto de la competencia');
     if(hay&&S.noFotoComp&&!document.getElementById('obs-no-foto').value.trim())
       f.push('Motivo por el que no se pueden tomar fotos');
   }
@@ -790,6 +799,7 @@ function guardarBorrador(){
       paso:S.paso,pasoMax:S.pasoMax,localSel:S.localSel,localData:S.localData,
       resp:S.resp,sino:S.sino,chk:S.chk,noFotoComp:S.noFotoComp,
       relevador:document.getElementById('sel-relevador').value,
+      aliasLocal:document.getElementById('inp-alias')?.value||'',
       obsNoFoto:document.getElementById('obs-no-foto').value,
       obsOtroMat:document.getElementById('obs-otroMat')?.value||'',
       obsMatComp:document.getElementById('obs-matComp')?.value||'',
@@ -809,6 +819,7 @@ function cargarBorrador(){
     S.chk=Object.assign({otroMat:[],muestraPromo:[],matAnterior:[],matComp:[],promoEntidad:[]},data.chk||{});
     S.noFotoComp=data.noFotoComp||false;S.pasoMax=data.pasoMax||0;
     if(data.relevador)document.getElementById('sel-relevador').value=data.relevador;
+    if(data.aliasLocal)document.getElementById('inp-alias').value=data.aliasLocal;
     if(data.observaciones)document.getElementById('observaciones').value=data.observaciones;
     if(data.obsNoFoto)document.getElementById('obs-no-foto').value=data.obsNoFoto;
     if(data.obsOtroMat)document.getElementById('obs-otroMat').value=data.obsOtroMat;
@@ -818,6 +829,7 @@ function cargarBorrador(){
     if(S.localSel){
       document.getElementById('badge-txt').textContent=S.localSel;
       document.getElementById('local-badge').classList.add('show');
+      document.getElementById('sec-alias').classList.add('on');
       if(S.localData){
         document.getElementById('info-nombre').textContent=S.localData.nombre||'';
         document.getElementById('info-direccion').textContent=S.localData.direccion||'';
@@ -878,6 +890,7 @@ function enviar(){
   const payload={
     relevador:document.getElementById('sel-relevador').value,
     local:S.localSel,localData:S.localData,
+    aliasLocal:document.getElementById('inp-alias')?.value?.trim()||'',
     afluencia:S.resp.afluencia||'',
     materialEncontrado:S.resp.materialEncontrado||'',
     otroMaterialBF:S.sino.otroMat==='no'?'No':(S.chk.otroMat||[]).join(', '),
@@ -926,12 +939,12 @@ function resetForm(){
   S.sino={otroMat:null,muestraPromo:null,matAnterior:null,matComp:null,promoEntidad:null,nombreEnc:null};
   S.chk={otroMat:[],muestraPromo:[],matAnterior:[],matComp:[],promoEntidad:[]};
   S.noFotoComp=false;S.fotos={bf:[],ant:[],comp:[]};S.enviando=false;
-  ['sel-relevador','buscar-local','observaciones','obs-no-foto','obs-otroMat','obs-matComp','obs-promoEntidad','inp-nombreEnc']
+  ['sel-relevador','buscar-local','observaciones','obs-no-foto','obs-otroMat','obs-matComp','obs-promoEntidad','inp-nombreEnc','inp-alias']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('local-badge').classList.remove('show');
   document.getElementById('local-info').classList.remove('show');
   document.getElementById('draft-banner').style.display='none';
-  ['sec-detalle-material','sec-foto-ant','sec-foto-comp','sec-nombreEnc'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['sec-detalle-material','sec-foto-ant','sec-foto-comp','sec-nombreEnc','sec-alias'].forEach(id=>document.getElementById(id).classList.remove('on'));
   document.getElementById('btn-no-foto-comp').classList.remove('sel');
   document.getElementById('sec-no-foto-obs').classList.remove('on');
   document.getElementById('sec-foto-comp-inputs').style.display='block';
