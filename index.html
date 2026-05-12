@@ -147,6 +147,15 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
 .aviso-config{background:#fef2f2;border:2px solid var(--rojo);border-radius:10px;padding:14px 16px;margin-bottom:14px;font-size:.84rem;color:#7f1d1d;line-height:1.6}
 .aviso-config strong{display:block;margin-bottom:4px;font-size:.9rem}
 .aviso-config code{background:#fee2e2;padding:2px 6px;border-radius:4px;font-size:.82rem;word-break:break-all}
+.modal-exito{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-exito.on{display:flex}
+.modal-box{background:#fff;border-radius:20px;padding:36px 28px 28px;max-width:340px;width:100%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.25);animation:popIn .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-box img.paquete{width:140px;height:140px;object-fit:contain;margin-bottom:18px}
+.modal-box h2{font-size:1.25rem;font-weight:700;color:var(--verde);margin-bottom:8px}
+.modal-box p{font-size:.9rem;color:#5f6368;line-height:1.5;margin-bottom:22px}
+.modal-btn{background:var(--azul);color:#fff;border:none;border-radius:10px;padding:13px 32px;font-size:.95rem;font-weight:700;cursor:pointer;width:100%;transition:background .2s}
+.modal-btn:hover{background:var(--azul-d)}
 </style>
 </head>
 <body>
@@ -408,6 +417,18 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
         <label>¿El encargado del local conoce la promoción activa de Banco Familiar? <span class="req">*</span></label>
         <div class="opciones" id="op-encargadoConoce"></div>
       </div>
+      <div class="field">
+        <label>¿Conocés el nombre del encargado? <span class="req">*</span></label>
+        <div class="sino-btns">
+          <div class="sino-btn" id="sino-nombreEnc-si" onclick="sino('nombreEnc','si')">Sí</div>
+          <div class="sino-btn" id="sino-nombreEnc-no" onclick="sino('nombreEnc','no')">No</div>
+        </div>
+        <div class="cond" id="sec-nombreEnc" style="margin-top:10px">
+          <input type="text" id="inp-nombreEnc" class="search-input"
+            placeholder="Nombre del encargado..."
+            oninput="guardarBorrador()" autocomplete="off">
+        </div>
+      </div>
     </div>
     <div class="card">
       <div class="card-title">Observaciones generales</div>
@@ -415,6 +436,16 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
     </div>
   </div>
 
+</div>
+
+<!-- Modal envío exitoso -->
+<div class="modal-exito" id="modal-exito">
+  <div class="modal-box">
+    <img class="paquete" src="paquete.png" alt="Enviado">
+    <h2>¡Respuestas enviadas!</h2>
+    <p>El relevamiento de <strong id="modal-local"></strong> fue guardado correctamente.</p>
+    <button class="modal-btn" onclick="cerrarModalYReset()">Nuevo relevamiento</button>
+  </div>
 </div>
 
 <div class="nav-bar">
@@ -430,7 +461,7 @@ const API_OK     = true;
 
 const S={paso:0,pasoMax:0,locales:[],localSel:null,localData:null,
   fotos:{bf:[],ant:[],comp:[]},resp:{},
-  sino:{otroMat:null,muestraPromo:null,matAnterior:null,matComp:null,promoEntidad:null},
+  sino:{otroMat:null,muestraPromo:null,matAnterior:null,matComp:null,promoEntidad:null,nombreEnc:null},
   chk:{otroMat:[],muestraPromo:[],matAnterior:[],matComp:[],promoEntidad:[]},
   noFotoComp:false,enviando:false};
 
@@ -532,6 +563,7 @@ function sino(key,val){
     }
   }
   if(key==='matAnterior')document.getElementById('sec-foto-ant').classList.toggle('on',val==='si');
+  if(key==='nombreEnc')document.getElementById('sec-nombreEnc').classList.toggle('on',val==='si');
   if(key==='matComp'||key==='promoEntidad'){
     const m=S.sino.matComp==='si'||S.sino.promoEntidad==='si';
     document.getElementById('sec-foto-comp').classList.toggle('on',m);
@@ -702,7 +734,12 @@ function camposFaltantes(n){
     if(hay&&S.noFotoComp&&!document.getElementById('obs-no-foto').value.trim())
       f.push('Motivo por el que no se pueden tomar fotos');
   }
-  if(n===4){if(!S.resp.encargadoConoce)f.push('Encargado conoce la promoción');}
+  if(n===4){
+    if(!S.resp.encargadoConoce)f.push('Encargado conoce la promoción');
+    if(!S.sino.nombreEnc)f.push('¿Conocés el nombre del encargado?');
+    if(S.sino.nombreEnc==='si'&&!document.getElementById('inp-nombreEnc').value.trim())
+      f.push('Nombre del encargado');
+  }
   return f;
 }
 
@@ -758,6 +795,7 @@ function guardarBorrador(){
       obsMatComp:document.getElementById('obs-matComp')?.value||'',
       obsPromoEntidad:document.getElementById('obs-promoEntidad')?.value||'',
       observaciones:document.getElementById('observaciones').value,
+      nombreEnc:document.getElementById('inp-nombreEnc')?.value||'',
     }));
   }catch(e){}
 }
@@ -767,7 +805,7 @@ function cargarBorrador(){
     const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return;
     const data=JSON.parse(raw);
     S.resp=data.resp||{};S.localSel=data.localSel||null;S.localData=data.localData||null;
-    S.sino=Object.assign({otroMat:null,muestraPromo:null,matAnterior:null,matComp:null,promoEntidad:null},data.sino||{});
+    S.sino=Object.assign({otroMat:null,muestraPromo:null,matAnterior:null,matComp:null,promoEntidad:null,nombreEnc:null},data.sino||{});
     S.chk=Object.assign({otroMat:[],muestraPromo:[],matAnterior:[],matComp:[],promoEntidad:[]},data.chk||{});
     S.noFotoComp=data.noFotoComp||false;S.pasoMax=data.pasoMax||0;
     if(data.relevador)document.getElementById('sel-relevador').value=data.relevador;
@@ -776,6 +814,7 @@ function cargarBorrador(){
     if(data.obsOtroMat)document.getElementById('obs-otroMat').value=data.obsOtroMat;
     if(data.obsMatComp)document.getElementById('obs-matComp').value=data.obsMatComp;
     if(data.obsPromoEntidad)document.getElementById('obs-promoEntidad').value=data.obsPromoEntidad;
+    if(data.nombreEnc)document.getElementById('inp-nombreEnc').value=data.nombreEnc;
     if(S.localSel){
       document.getElementById('badge-txt').textContent=S.localSel;
       document.getElementById('local-badge').classList.add('show');
@@ -811,6 +850,7 @@ function cargarBorrador(){
       verificarObsOtro(key);
     });
     if(S.sino.matAnterior==='si')document.getElementById('sec-foto-ant').classList.add('on');
+    if(S.sino.nombreEnc==='si')document.getElementById('sec-nombreEnc').classList.add('on');
     if(S.sino.matComp==='si'||S.sino.promoEntidad==='si')document.getElementById('sec-foto-comp').classList.add('on');
     if(S.noFotoComp){
       document.getElementById('btn-no-foto-comp').classList.add('sel');
@@ -851,6 +891,7 @@ function enviar(){
     promoOtraEntidad:S.sino.promoEntidad==='no'?'No':(S.chk.promoEntidad||[]).join(', '),
     obsPromoEntidad:document.getElementById('obs-promoEntidad')?.value?.trim()||'',
     encargadoConoce:S.resp.encargadoConoce||'',
+    nombreEncargado:S.sino.nombreEnc==='si'?document.getElementById('inp-nombreEnc').value.trim():'No informado',
     observaciones:document.getElementById('observaciones').value.trim(),
     obsNoFotoComp:S.noFotoComp?document.getElementById('obs-no-foto').value.trim():'',
     fotosBF:S.fotos.bf.map(f=>({base64:f.dataUrl,nombre:f.nombre})),
@@ -863,8 +904,9 @@ function enviar(){
       hideOverlay();S.enviando=false;
       if(res.ok){
         try{localStorage.removeItem(STORAGE_KEY);}catch(e){}
-        toast('¡Registro guardado correctamente!','ok');
-        setTimeout(resetForm,1500);
+        hideOverlay();
+        document.getElementById('modal-local').textContent=S.localSel||'el local';
+        document.getElementById('modal-exito').classList.add('on');
       }else{toast('Error: '+res.error,'err');btn.disabled=false;btn.textContent='Enviar';}
     })
     .catch(e=>{
@@ -874,17 +916,22 @@ function enviar(){
     });
 }
 
+function cerrarModalYReset(){
+  document.getElementById('modal-exito').classList.remove('on');
+  resetForm();
+}
+
 function resetForm(){
   S.paso=0;S.pasoMax=0;S.localSel=null;S.localData=null;S.resp={};
-  S.sino={otroMat:null,muestraPromo:null,matAnterior:null,matComp:null,promoEntidad:null};
+  S.sino={otroMat:null,muestraPromo:null,matAnterior:null,matComp:null,promoEntidad:null,nombreEnc:null};
   S.chk={otroMat:[],muestraPromo:[],matAnterior:[],matComp:[],promoEntidad:[]};
   S.noFotoComp=false;S.fotos={bf:[],ant:[],comp:[]};S.enviando=false;
-  ['sel-relevador','buscar-local','observaciones','obs-no-foto','obs-otroMat','obs-matComp','obs-promoEntidad']
+  ['sel-relevador','buscar-local','observaciones','obs-no-foto','obs-otroMat','obs-matComp','obs-promoEntidad','inp-nombreEnc']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('local-badge').classList.remove('show');
   document.getElementById('local-info').classList.remove('show');
   document.getElementById('draft-banner').style.display='none';
-  ['sec-detalle-material','sec-foto-ant','sec-foto-comp'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['sec-detalle-material','sec-foto-ant','sec-foto-comp','sec-nombreEnc'].forEach(id=>document.getElementById(id).classList.remove('on'));
   document.getElementById('btn-no-foto-comp').classList.remove('sel');
   document.getElementById('sec-no-foto-obs').classList.remove('on');
   document.getElementById('sec-foto-comp-inputs').style.display='block';
