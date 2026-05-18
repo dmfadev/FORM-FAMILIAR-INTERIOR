@@ -270,7 +270,19 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
   <div class="alerta" id="alerta-2"></div>
 
   <div class="card">
-    <div class="card-title">Material Banco Familiar</div>
+    <div class="card-title">Material Banco Familiar
+      <a href="Señalización_Gastronomia.pdf" target="_blank" download
+        style="margin-left:auto;font-size:.72rem;font-weight:600;color:var(--azul);text-decoration:none;background:#e8f0fe;padding:4px 10px;border-radius:6px;border:1px solid #c5d9f5;white-space:nowrap">
+        Ver señalizacion PDF
+      </a>
+    </div>
+
+    <!-- Imagen de referencia general -->
+    <div style="margin-bottom:14px;text-align:center">
+      <img src="referencia_tablentent_mesa_mostrador.png" alt="Referencia materiales"
+        style="max-width:100%;border-radius:10px;border:1px solid var(--gris-2)">
+      <p style="font-size:.72rem;color:var(--gris-3);margin-top:6px">Referencia visual de materiales Banco Familiar</p>
+    </div>
 
     <!-- Pregunta 1: hay material designado -->
     <div class="field">
@@ -308,8 +320,7 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
 
             <div class="chk-item" onclick="toggleChkRef(this,'matA','Tabletent de mesa (11x15cm)')">
               <div class="chk-box"></div>
-              <img class="chk-ref" src="ref_tablentent_mesa.jpg" alt="Tabletent mesa"
-                onerror="this.outerHTML='<div class=\'chk-ref-placeholder\'><span>Tabletent mesa</span></div>'">
+              <img class="chk-ref" src="Tablentent_de_mesa_11x15cm.png" alt="Tabletent mesa">
               <div class="chk-text">
                 <strong>Tabletent de mesa</strong>
                 <small>11 x 15 cm — Tipo A</small>
@@ -318,8 +329,7 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
 
             <div class="chk-item" onclick="toggleChkRef(this,'matA','Tabletent mostrador (18x25cm)')">
               <div class="chk-box"></div>
-              <img class="chk-ref" src="ref_tablentent_mostrador.jpg" alt="Tabletent mostrador"
-                onerror="this.outerHTML='<div class=\'chk-ref-placeholder\'><span>Tabletent mostrador</span></div>'">
+              <img class="chk-ref" src="Tablentent_mostrador_18x25cm.png" alt="Tabletent mostrador">
               <div class="chk-text">
                 <strong>Tabletent mostrador</strong>
                 <small>18 x 25 cm — Tipo A</small>
@@ -328,8 +338,7 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
 
             <div class="chk-item" onclick="toggleChkRef(this,'matA','Calco (60x40cm)')">
               <div class="chk-box"></div>
-              <img class="chk-ref" src="ref_calco.jpg" alt="Calco"
-                onerror="this.outerHTML='<div class=\'chk-ref-placeholder\'><span>Calco 60x40</span></div>'">
+              <img class="chk-ref" src="Calco_60x40cm.png" alt="Calco">
               <div class="chk-text">
                 <strong>Calco</strong>
                 <small>60 x 40 cm — Tipo A</small>
@@ -349,8 +358,7 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
 
             <div class="chk-item" onclick="toggleChkRef(this,'matB','Saliente (30x20cm)')">
               <div class="chk-box"></div>
-              <img class="chk-ref" src="ref_saliente.jpg" alt="Saliente"
-                onerror="this.outerHTML='<div class=\'chk-ref-placeholder\'><span>Saliente 30x20</span></div>'">
+              <img class="chk-ref" src="Saliente_30x20cm.png" alt="Saliente">
               <div class="chk-text">
                 <strong>Saliente</strong>
                 <small>30 x 20 cm — Tipo B</small>
@@ -359,8 +367,7 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
 
             <div class="chk-item" onclick="toggleChkRef(this,'matB','Tabletent carpita')">
               <div class="chk-box"></div>
-              <img class="chk-ref" src="ref_tablentent_carpita.jpg" alt="Tabletent carpita"
-                onerror="this.outerHTML='<div class=\'chk-ref-placeholder\'><span>Tabletent carpita</span></div>'">
+              <img class="chk-ref" src="Tablentent_carpita.png" alt="Tabletent carpita">
               <div class="chk-text">
                 <strong>Tabletent carpita</strong>
                 <small>Tipo B</small>
@@ -369,8 +376,7 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
 
             <div class="chk-item" onclick="toggleChkRef(this,'matB','Tabletent A4')">
               <div class="chk-box"></div>
-              <img class="chk-ref" src="ref_tablentent_a4.jpg" alt="Tabletent A4"
-                onerror="this.outerHTML='<div class=\'chk-ref-placeholder\'><span>Tabletent A4</span></div>'">
+              <img class="chk-ref" src="Tablentent_A4.png" alt="Tabletent A4">
               <div class="chk-text">
                 <strong>Tabletent A4</strong>
                 <small>Tipo B</small>
@@ -379,8 +385,7 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
 
             <div class="chk-item" onclick="toggleChkRef(this,'matB','Calco (60x40cm)')">
               <div class="chk-box"></div>
-              <img class="chk-ref" src="ref_calco.jpg" alt="Calco"
-                onerror="this.outerHTML='<div class=\'chk-ref-placeholder\'><span>Calco 60x40</span></div>'">
+              <img class="chk-ref" src="Calco_60x40cm.png" alt="Calco">
               <div class="chk-text">
                 <strong>Calco</strong>
                 <small>60 x 40 cm — Tipo B</small>
