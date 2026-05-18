@@ -748,8 +748,13 @@ function sino(key,val){
       if(bpsi)bpsi.className='sino-btn';if(bpno)bpno.className='sino-btn';
     }
   }
-  if(key==='nombreEnc' && val==='no'){
-    const inp=document.getElementById('inp-nombreEnc');if(inp)inp.value='';
+  if(key==='nombreEnc'){
+    const sec=document.getElementById('sec-nombreEnc-si');
+    if(sec){
+      if(val==='si') sec.classList.add('on');
+      else sec.classList.remove('on');
+    }
+    if(val==='no'){const inp=document.getElementById('inp-nombreEnc');if(inp)inp.value='';}
   }
   guardarBorrador();actualizarNav();
 }
