@@ -104,6 +104,8 @@ select:focus,.search-input:focus{outline:none;border-color:var(--azul);box-shado
 
 /* INFO BOX */
 .info-box{font-size:.76rem;color:#1e3a8a;background:#e8f0fe;border-radius:6px;padding:7px 11px;margin-bottom:10px;border-left:3px solid var(--azul);line-height:1.4}
+.guia-btn{display:flex;align-items:center;gap:8px;background:#d97706;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:.82rem;font-weight:700;text-decoration:none;cursor:pointer;margin-bottom:14px;width:100%;justify-content:center;letter-spacing:.04em;box-shadow:0 2px 8px rgba(217,119,6,.35);transition:background .2s}
+.guia-btn:hover{background:#b45309}
 
 /* FOTOS */
 .foto-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
@@ -270,18 +272,16 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
   <div class="alerta" id="alerta-2"></div>
 
   <div class="card">
-    <div class="card-title">Material Banco Familiar
-      <a href="Señalización_Gastronomia.pdf" target="_blank" download
-        style="margin-left:auto;font-size:.72rem;font-weight:600;color:var(--azul);text-decoration:none;background:#e8f0fe;padding:4px 10px;border-radius:6px;border:1px solid #c5d9f5;white-space:nowrap">
-        Ver señalizacion PDF
-      </a>
-    </div>
+    <div class="card-title">Material Banco Familiar</div>
+    <a class="guia-btn" href="Señalización Gastronomia (1).pptx" target="_blank">
+      📋 GUIA FOTOGRAFICA BF
+    </a>
 
     <!-- Imagen de referencia general -->
     <div style="margin-bottom:14px;text-align:center">
       <img src="referencia_tablentent_mesa_mostrador.png" alt="Referencia materiales"
-        style="max-width:100%;border-radius:10px;border:1px solid var(--gris-2)">
-      <p style="font-size:.72rem;color:var(--gris-3);margin-top:6px">Referencia visual de materiales Banco Familiar</p>
+        style="width:180px;height:auto;border-radius:8px;border:1px solid var(--gris-2);display:inline-block">
+      <p style="font-size:.72rem;color:var(--gris-3);margin-top:5px">Referencia visual de materiales</p>
     </div>
 
     <!-- Pregunta 1: hay material designado -->
@@ -299,7 +299,11 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
       <!-- Tipo de oferta -->
       <div class="field">
         <label>Que tipo de oferta corresponde a este local? <span class="req">*</span></label>
-        <div class="opciones" id="op-tipoOferta"></div>
+        <div class="opciones">
+          <div class="opcion" data-campo="tipoOferta" data-val="Fast Food (jueves y viernes)" onclick="elegirOpcion(this,'tipoOferta','Fast Food (jueves y viernes)')"><div class="radio"></div>Fast Food (jueves y viernes)</div>
+          <div class="opcion" data-campo="tipoOferta" data-val="Restaurante (sabado y domingo)" onclick="elegirOpcion(this,'tipoOferta','Restaurante (sabado y domingo)')"><div class="radio"></div>Restaurante (sabado y domingo)</div>
+          <div class="opcion" data-campo="tipoOferta" data-val="Fast Food (Lunes a Viernes)" onclick="elegirOpcion(this,'tipoOferta','Fast Food (Lunes a Viernes)')"><div class="radio"></div>Fast Food (Lunes a Viernes)</div>
+        </div>
       </div>
 
       <!-- Tipo de material asignado -->
@@ -399,13 +403,22 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
       <!-- El material corresponde al tipo asignado -->
       <div class="field">
         <label>El material corresponde al tipo asignado a este local? <span class="req">*</span></label>
-        <div class="opciones" id="op-materialCorresponde"></div>
+        <div class="opciones">
+          <div class="opcion" data-campo="materialCorresponde" data-val="Si, corresponde al tipo asignado" onclick="elegirOpcion(this,'materialCorresponde','Si, corresponde al tipo asignado')"><div class="radio"></div>Si, corresponde al tipo asignado</div>
+          <div class="opcion" data-campo="materialCorresponde" data-val="No, tiene material de otro tipo" onclick="elegirOpcion(this,'materialCorresponde','No, tiene material de otro tipo')"><div class="radio"></div>No, tiene material de otro tipo</div>
+          <div class="opcion" data-campo="materialCorresponde" data-val="Tiene material de campana anterior" onclick="elegirOpcion(this,'materialCorresponde','Tiene material de campana anterior')"><div class="radio"></div>Tiene material de campana anterior</div>
+        </div>
       </div>
 
       <!-- Estado del material -->
       <div class="field">
         <label>El material esta en buen estado y visible para el cliente? <span class="req">*</span></label>
-        <div class="opciones" id="op-estadoMaterial"></div>
+        <div class="opciones">
+          <div class="opcion" data-campo="estadoMaterial" data-val="Si, en perfecto estado" onclick="elegirOpcion(this,'estadoMaterial','Si, en perfecto estado')"><div class="radio"></div>Si, en perfecto estado</div>
+          <div class="opcion" data-campo="estadoMaterial" data-val="Visible pero deteriorado" onclick="elegirOpcion(this,'estadoMaterial','Visible pero deteriorado')"><div class="radio"></div>Visible pero deteriorado</div>
+          <div class="opcion" data-campo="estadoMaterial" data-val="Poco visible / mal ubicado" onclick="elegirOpcion(this,'estadoMaterial','Poco visible / mal ubicado')"><div class="radio"></div>Poco visible / mal ubicado</div>
+          <div class="opcion" data-campo="estadoMaterial" data-val="No esta colocado" onclick="elegirOpcion(this,'estadoMaterial','No esta colocado')"><div class="radio"></div>No esta colocado</div>
+        </div>
       </div>
 
       <!-- Beneficio exhibido -->
@@ -492,6 +505,9 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
 
   <div class="card">
     <div class="card-title">Competencia</div>
+    <a class="guia-btn" href="Señalización Gastronomia (1).pptx" target="_blank">
+      📋 GUIA FOTOGRAFICA BF
+    </a>
 
     <div class="field">
       <label>Hay material de otros bancos o medios de pago exhibido en el local? <span class="req">*</span></label>
@@ -584,9 +600,17 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
   <div class="alerta" id="alerta-4"></div>
   <div class="card">
     <div class="card-title">Cierre</div>
+    <a class="guia-btn" href="Señalización Gastronomia (1).pptx" target="_blank">
+      📋 GUIA FOTOGRAFICA BF
+    </a>
     <div class="field">
       <label>El encargado del local conoce la promocion activa de Banco Familiar? <span class="req">*</span></label>
-      <div class="opciones" id="op-encargadoConoce"></div>
+      <div class="opciones">
+        <div class="opcion" data-campo="encargadoConoce" data-val="Si, la conoce bien" onclick="elegirOpcion(this,'encargadoConoce','Si, la conoce bien')"><div class="radio"></div>Si, la conoce bien</div>
+        <div class="opcion" data-campo="encargadoConoce" data-val="La conoce parcialmente" onclick="elegirOpcion(this,'encargadoConoce','La conoce parcialmente')"><div class="radio"></div>La conoce parcialmente</div>
+        <div class="opcion" data-campo="encargadoConoce" data-val="No la conoce" onclick="elegirOpcion(this,'encargadoConoce','No la conoce')"><div class="radio"></div>No la conoce</div>
+        <div class="opcion" data-campo="encargadoConoce" data-val="No habia encargado disponible" onclick="elegirOpcion(this,'encargadoConoce','No habia encargado disponible')"><div class="radio"></div>No habia encargado disponible</div>
+      </div>
     </div>
     <div class="field">
       <label>Conoces el nombre del encargado? <span class="req">*</span></label>
