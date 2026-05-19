@@ -433,6 +433,22 @@ textarea:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 3px rgba(0
 
     </div><!-- /sec-hayMat-si -->
 
+    <!-- Obs: sin material BF — solo si NO hay material -->
+    <div class="cond" id="sec-hayMat-no" style="margin-top:8px">
+      <div class="field">
+        <label>Por que no hay material de Banco Familiar en este local? <span class="req">*</span></label>
+        <textarea id="obs-sin-material" placeholder="Indicar el motivo por el que no hay material BF colocado..."
+          oninput="guardarBorrador();actualizarNav()" style="min-height:80px"></textarea>
+      </div>
+    </div>
+
+    <!-- Obs: otro tipo de material — siempre visible, opcional -->
+    <div class="field" style="margin-top:8px">
+      <label>Hay otro tipo de material? <span class="opt">(opcional)</span></label>
+      <textarea id="obs-otro-material" placeholder="Describir si hay algun otro material de Banco Familiar no listado..."
+        oninput="guardarBorrador()" style="min-height:68px"></textarea>
+    </div>
+
     <!-- Material campana anterior — siempre visible -->
     <div class="field" style="margin-top:8px">
       <label>Hay material de Banco Familiar de campanas anteriores aun colocado? <span class="req">*</span></label>
@@ -917,6 +933,8 @@ function camposFaltantes(n){
   }
   if(n===2){
     if(!S.sino.hayMat) f.push('Si el local cuenta con materiales designados');
+    if(S.sino.hayMat==='no' && !document.getElementById('obs-sin-material').value.trim())
+      f.push('Por que no hay material de Banco Familiar en este local');
     if(S.sino.hayMat==='si'){
       if(!S.resp.tipoOferta) f.push('Tipo de oferta del local');
       if(!S.sino.tipoMat) f.push('Tipo de material asignado (A o B)');
@@ -1003,6 +1021,8 @@ function guardarBorrador(){
       alias:        document.getElementById('inp-alias')?.value||'',
       nombreEnc:    document.getElementById('inp-nombreEnc')?.value||'',
       obsNoFoto:    document.getElementById('obs-no-foto').value,
+      obsSinMat:    document.getElementById('obs-sin-material')?.value||'',
+      obsOtroMat:   document.getElementById('obs-otro-material')?.value||'',
       obsMarcas:    document.getElementById('obs-marcas')?.value||'',
       obsPromo:     document.getElementById('obs-tipoPromo')?.value||'',
       observaciones:document.getElementById('observaciones').value,
@@ -1023,6 +1043,8 @@ function cargarBorrador(){
     if(data.alias)        document.getElementById('inp-alias').value=data.alias;
     if(data.nombreEnc)    document.getElementById('inp-nombreEnc').value=data.nombreEnc;
     if(data.obsNoFoto)    document.getElementById('obs-no-foto').value=data.obsNoFoto;
+    if(data.obsSinMat)    document.getElementById('obs-sin-material').value=data.obsSinMat;
+    if(data.obsOtroMat)   document.getElementById('obs-otro-material').value=data.obsOtroMat;
     if(data.obsMarcas)    document.getElementById('obs-marcas').value=data.obsMarcas;
     if(data.obsPromo)     document.getElementById('obs-tipoPromo').value=data.obsPromo;
     if(data.observaciones)document.getElementById('observaciones').value=data.observaciones;
@@ -1108,6 +1130,8 @@ function enviar(){
     localData:             S.localData,
     nombreIdentificado:    document.getElementById('inp-alias')?.value?.trim()||'',
     hayMaterialDesignado:  S.sino.hayMat==='si'?'Si':'No',
+    motivoSinMaterial:     S.sino.hayMat==='no'?document.getElementById('obs-sin-material').value.trim():'',
+    otroMaterial:          document.getElementById('obs-otro-material')?.value?.trim()||'',
     tipoOferta:            S.resp.tipoOferta||'',
     tipoMaterialEncontrado:S.sino.tipoMat||'',
     materialesColocados:   matColocados,
@@ -1159,14 +1183,15 @@ function resetForm(){
   S.noFotoComp=false;S.fotos={bf:[],ant:[],comp:[]};S.enviando=false;
 
   ['sel-fiscalizador','buscar-local','inp-alias','inp-nombreEnc',
-   'observaciones','obs-no-foto','obs-marcas','obs-tipoPromo']
+   'observaciones','obs-no-foto','obs-marcas','obs-tipoPromo',
+   'obs-sin-material','obs-otro-material']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
 
   document.getElementById('local-badge').classList.remove('show');
   document.getElementById('local-info').classList.remove('show');
   document.getElementById('draft-banner').style.display='none';
 
-  ['sec-hayMat-si','sec-tipoA','sec-tipoB','sec-matAnt-si',
+  ['sec-hayMat-si','sec-hayMat-no','sec-tipoA','sec-tipoB','sec-matAnt-si',
    'sec-foto-ant','sec-hayComp-si','sec-promoComp-si','sec-foto-comp',
    'sec-nombreEnc-si','sec-alias']
     .forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('on');});
